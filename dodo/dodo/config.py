@@ -1,3 +1,5 @@
+"""parse env"""
+
 from envparse import Env
 
 env = Env()

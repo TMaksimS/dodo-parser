@@ -1,3 +1,4 @@
+# pylint: skip-file
 # Define here the models for your scraped items
 #
 # See documentation in:
