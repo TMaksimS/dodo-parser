@@ -6,12 +6,13 @@ authors = [
     {name = "Maksim Tarkin",email = "williamcano97@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = "=3.12.3"
 dependencies = [
     "scrapy (>=2.12.0,<3.0.0)",
     "requests (>=2.32.3,<3.0.0)",
     "envparse (>=0.2.0,<0.3.0)",
-    "pylint (>=3.3.6,<4.0.0)"
+    "pylint (>=3.3.6,<4.0.0)",
+    "loguru (>=0.7.3,<0.8.0)"
 ]
 
 

@@ -8,13 +8,14 @@ from scrapy import Request
 from scrapy.http.request import VerboseCookie
 
 from ..config import MY_USER_AGENT
+from ..logger import LOGER
 
 
 class DodoSpider(scrapy.Spider):
     """spider"""
     name = "Dodo"
     allowed_domains = ["dodopizza.ru"]
-    start_urls = ["https://dodopizza.ru/moscow"]
+    start_urls = ["https://dodopizza.ru/sarapul"]
 
     def start_requests(self) -> Iterable[Request]:
         """hack block"""
@@ -36,6 +37,7 @@ class DodoSpider(scrapy.Spider):
             )
         session_block.close()
 
+    @LOGER.catch
     def parse(self, response):
         """getting data items"""
         sections = response.xpath(
@@ -44,18 +46,32 @@ class DodoSpider(scrapy.Spider):
         for section in sections:
             articles = section.xpath(".//article")
             for article in articles:
-                yield {
-                    "id": article.xpath("./@data-testid").get().split("_")[-1],
-                    "name": article.xpath(".//div/a/span/text()").get(),
-                    "description": article.xpath(".//div/text()").get().replace("\n", ""),
-                    "section": section.xpath(".//h2/text()").get(),
-                    "size": [25, 30, 35] if section.xpath(
-                        ".//h2/text()"
-                    ).get() == "Пиццы" else None,
-                    "price": int(
-                        "".join(char for char in article.xpath(
-                            ".//footer/div/text()"
-                        ).get() if char.isdigit())),
-                    "images": [image.split(' ')[0] for image in
-                               article.xpath(".//picture/source/@data-srcset").getall()],
-                }
+                try:
+                    yield {
+                        "id": article.xpath("./@data-testid").get().split("_")[-1],
+                        "name": article.xpath(".//div/a/span/text()").get(),
+                        "description": article.xpath(".//div/text()").get().replace("\n", ""),
+                        "section": section.xpath(".//h2/text()").get(),
+                        "size": [25, 30, 35] if section.xpath(
+                            ".//h2/text()"
+                        ).get() == "Пиццы" else None,
+                        "price": int(
+                            "".join(char for char in article.xpath(
+                                ".//footer/div/text()"
+                            ).get() if char.isdigit())),
+                        "images": [image.split(' ')[0] for image in
+                                   article.xpath(".//picture/source/@data-srcset").getall()],
+                    }
+                except AttributeError:
+                    LOGER.error({
+                        "url": response.url,
+                        "item_name": article.xpath(".//div/a/span/text()").get(),
+                        "error": "description replace"
+                    })
+                    continue
+                except TypeError:
+                    LOGER.error({
+                        "url": response.url,
+                        "item_name": article.xpath(".//div/a/span/text()").get(),
+                        "error": "getting price error"
+                    })
