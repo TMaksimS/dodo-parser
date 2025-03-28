@@ -61,7 +61,9 @@ class DodoSpider(scrapy.Spider):
                     yield {
                         "id": article.xpath("./@data-testid").get().split("_")[-1],
                         "name": article.xpath(".//div/a/span/text()").get(),
-                        "description": article.xpath(".//div/text()").get().replace("\n", ""),
+                        "description": article.xpath(
+                            ".//div[@class='sc-1gfzx1o-0 cFGSzH']/text()"
+                        ).get().replace("\n", ""),
                         "section": section.xpath(".//h2/text()").get(),
                         "size": [25, 30, 35] if section.xpath(
                             ".//h2/text()"
