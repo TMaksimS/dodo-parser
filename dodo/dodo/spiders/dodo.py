@@ -7,7 +7,7 @@ import scrapy
 from scrapy import Request
 from scrapy.http.request import VerboseCookie
 
-from ..config import MY_USER_AGENT
+from ..config import MY_USER_AGENT, CITIES
 from ..logger import LOGER
 
 
@@ -15,15 +15,26 @@ class DodoSpider(scrapy.Spider):
     """spider"""
     name = "Dodo"
     allowed_domains = ["dodopizza.ru"]
-    start_urls = ["https://dodopizza.ru/sarapul"]
+    start_urls = CITIES
 
+    @LOGER.catch
     def start_requests(self) -> Iterable[Request]:
         """hack block"""
         session_block = requests.session()
         hack_block = session_block.get(
             "https://dodopizza.ru/api/v1/stories/sdkkey",
             headers={"User-Agent": MY_USER_AGENT})
+        valid_cities = requests.get(
+            "https://dodopizza.ru/sitemap.xml.gz",
+            headers={"User-Agent": MY_USER_AGENT}).content.decode().split(
+            "https://dodopizza.ru/sitemap__")[1:]
+        valid_urls = [
+            "https://dodopizza.ru/" + item.split("__")[0].lower() for item in valid_cities
+        ]
         for url in self.start_urls:
+            if url not in valid_urls:
+                LOGER.error({"url": url, "error": "has been skipped (not in array)"})
+                continue
             yield Request(
                 url=url,
                 headers={"Authorization": f"Bearer {hack_block.content.decode()[2:-2]}"},
@@ -75,3 +86,4 @@ class DodoSpider(scrapy.Spider):
                         "item_name": article.xpath(".//div/a/span/text()").get(),
                         "error": "getting price error"
                     })
+                    continue
