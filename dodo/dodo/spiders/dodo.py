@@ -24,7 +24,7 @@ class DodoSpider(scrapy.Spider):
         hack_block = session_block.get(
             "https://dodopizza.ru/api/v1/stories/sdkkey",
             headers={"User-Agent": MY_USER_AGENT})
-        valid_cities = requests.get(
+        valid_cities = session_block.get(
             "https://dodopizza.ru/sitemap.xml.gz",
             headers={"User-Agent": MY_USER_AGENT}).content.decode().split(
             "https://dodopizza.ru/sitemap__")[1:]
