@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  rabbitmq:
+    image: rabbitmq:4.0.7-management
+    env_file:
+      - .env
+    hostname: ${RABBIT_HOST}
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBIT_PASS}
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    ports:
+      - 15672:15672
+      - ${RABBIT_PORT}:${RABBIT_PORT}
+    networks:
+      - custom
+networks:
+  custom:
+    driver: bridge
