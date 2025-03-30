@@ -1,5 +1,5 @@
 """main file"""
-
+# pylint: disable = [no-name-in-module, import-error, raise-missing-from, broad-exception-raised]
 import asyncio
 
 from aiormq import AMQPConnectionError
@@ -12,6 +12,7 @@ from dodo.dodo.spiders.dodo import DodoSpider
 
 
 def start_scrapy():
+    """мэйн функция для запуска скраппера"""
     settings = get_project_settings()
     settings.set("BOT_NAME", "dodo")
     settings.set("SPIDER_MODULES", ["dodo.dodo.spiders"])
@@ -33,4 +34,3 @@ if __name__ == "__main__":
     except AMQPConnectionError:
         raise Exception("Error when connecting to rabbit")
     start_scrapy()
-

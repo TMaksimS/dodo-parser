@@ -9,7 +9,7 @@
 
 from .logger import LOGER
 from .rabbitmq.rabbit_broker import send_item_dodo_to_rabbit
-from .rabbitmq.schemas import DodoProduct
+from .rabbitmq.schemas import DodoProductSchema
 
 
 class DodoPipeline:
@@ -20,5 +20,5 @@ class DodoPipeline:
     async def process_item(self, item, spider):
         # pylint: disable = unused-argument
         """default scrapy func with sender task"""
-        await send_item_dodo_to_rabbit(DodoProduct(**item))
+        await send_item_dodo_to_rabbit(DodoProductSchema(**item))
         return item

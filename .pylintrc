@@ -1,2 +1,3 @@
 [MASTER]
+ignore-paths = dodo/database/migrations
 init-hook='import sys; sys.path.append(".")'
