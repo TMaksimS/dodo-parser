@@ -11,3 +11,5 @@ run_fstream:
 	poetry run python3 consumer.py
 down:
 	docker compose -f docker-compose-local.yaml down --remove-orphans
+up_prod_compose:
+	docker compose -f docker-compose-prod.yaml up -d && sleep 5

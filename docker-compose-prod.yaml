@@ -1,0 +1,68 @@
+version: "3.8"
+services:
+  db:
+    env_file:
+      - .env
+    container_name: "db_test"
+    image: postgres:17.0-alpine3.20
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    networks:
+      - custom
+  rabbitmq:
+    image: rabbitmq:4.0.7-management
+    env_file:
+      - .env
+    container_name: "rabbitmq"
+    hostname: ${RABBIT_HOST}
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBIT_PASS}
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    ports:
+      - 15672:15672
+      - ${RABBIT_PORT}:${RABBIT_PORT}
+    networks:
+      - custom
+  scrapy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    container_name: "scrapy"
+    environment:
+      RABBIT_URL: amqp://${RABBIT_USER}:${RABBIT_PASS}@rabbitmq:${RABBIT_PORT}
+    command: >
+      sh -c "sleep 10 && poetry run python3 main.py"
+    depends_on:
+      - rabbitmq
+    networks:
+      - custom
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    container_name: "worker"
+    environment:
+      RABBIT_URL: amqp://${RABBIT_USER}:${RABBIT_PASS}@rabbitmq:${RABBIT_PORT}
+      REAL_DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASS}@db/${DB_NAME}
+    command: >
+      sh -c "sleep 10 && poetry run alembic upgrade head && poetry run python3 consumer.py"
+    depends_on:
+      - db
+      - rabbitmq
+    networks:
+      - custom
+networks:
+  custom:
+    driver: bridge

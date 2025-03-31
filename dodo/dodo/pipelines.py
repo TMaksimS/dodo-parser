@@ -20,5 +20,6 @@ class DodoPipeline:
     async def process_item(self, item, spider):
         # pylint: disable = unused-argument
         """default scrapy func with sender task"""
-        await send_item_dodo_to_rabbit(DodoProductSchema(**item))
+        result = await send_item_dodo_to_rabbit(DodoProductSchema(**item))
+        LOGER.info(result)
         return item
