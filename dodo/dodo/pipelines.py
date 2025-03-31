@@ -1,4 +1,9 @@
 """pipeline for scrapy"""
+import json
+
+from itemadapter import ItemAdapter
+
+from .config import QUEUE_DODO
 # Define your item pipelines here
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
@@ -8,7 +13,7 @@
 # useful for handling different item types with a single interface
 
 from .logger import LOGER
-from .rabbitmq.rabbit_broker import send_item_dodo_to_rabbit
+from .rabbitmq.rabbit_broker import send_item_dodo_to_rabbit, broker
 from .rabbitmq.schemas import DodoProductSchema
 
 
@@ -16,10 +21,16 @@ class DodoPipeline:
     # pylint: disable = too-few-public-methods
     """Default Pipeline object"""
 
-    @LOGER.catch
-    async def process_item(self, item, spider):
-        # pylint: disable = unused-argument
-        """default scrapy func with sender task"""
-        result = await send_item_dodo_to_rabbit(DodoProductSchema(**item))
-        LOGER.info(result)
+    def open_spider(self, spider):
+        """действие при откритии паука"""
+        self.file = open("dodospider.json", "w")
+
+    def close_spider(self, spider):
+        """дейтсвие при закрытии паука"""
+        self.file.close()
+
+    def process_item(self, item, spider):
+        """обработка обьекта"""
+        line = json.dumps(ItemAdapter(item).asdict()) + "\n"
+        self.file.write(line)
         return item

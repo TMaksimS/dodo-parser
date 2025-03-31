@@ -7,7 +7,7 @@ from faststream.rabbit import RabbitBroker, RabbitQueue
 from .schemas import DodoProductSchema
 from ..config import RABBIT_URL, QUEUE_DODO
 
-broker = RabbitBroker(RABBIT_URL, timeout=20, max_consumers=10, log_level=logging.INFO)
+broker = RabbitBroker(RABBIT_URL, timeout=30, max_consumers=10, log_level=logging.INFO)
 
 async def send_item_dodo_to_rabbit(create: DodoProductSchema):
     """Отправка обьекта в очередь"""
