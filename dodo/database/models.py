@@ -1,4 +1,6 @@
 """db models"""
+# pylint: disable = [import-error, no-name-in-module]
+
 import uuid
 
 from sqlalchemy import UUID, String, ARRAY, Integer
@@ -9,6 +11,7 @@ from dodo.database import Base
 
 class DodoProductModel(Base):
     """Обьект продукции ДОДО"""
+    # pylint: disable = too-few-public-methods
     __tablename__ = "dodo_products"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     item_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True))

@@ -1,8 +1,10 @@
+"""main file for consumer"""
+# pylint: disable = [import-error, no-name-in-module, broad-exception-caught, broad-exception-raised, raise-missing-from, no-member]
+
 import asyncio
 
 from aiormq import AMQPConnectionError
 from faststream.annotations import FastStream
-from sqlalchemy.dialects.postgresql import asyncpg
 
 from dodo.database.models import DodoProductModel
 from dodo.database.uow import UoW

@@ -1,9 +1,10 @@
 """pipeline for scrapy"""
+# pylint: disable = [unspecified-encoding consider-using-with unused-argument attribute-defined-outside-init]
 import json
 
 from itemadapter import ItemAdapter
 
-from .config import QUEUE_DODO
+
 # Define your item pipelines here
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
@@ -11,10 +12,6 @@ from .config import QUEUE_DODO
 
 
 # useful for handling different item types with a single interface
-
-from .logger import LOGER
-from .rabbitmq.rabbit_broker import send_item_dodo_to_rabbit, broker
-from .rabbitmq.schemas import DodoProductSchema
 
 
 class DodoPipeline:

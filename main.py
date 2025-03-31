@@ -1,5 +1,5 @@
-"""main file"""
-# pylint: disable = [no-name-in-module, import-error, raise-missing-from, broad-exception-raised]
+"""main file for scrapy"""
+# pylint: disable = [no-name-in-module, import-error, raise-missing-from, broad-exception-raised, unspecified-encoding, duplicate-code]
 import asyncio
 import json
 
@@ -8,7 +8,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 from dodo.dodo.config import MY_USER_AGENT, QUEUE_DODO
-from dodo.dodo.rabbitmq.rabbit_broker import create_queue, send_item_dodo_to_rabbit, broker
+from dodo.dodo.rabbitmq.rabbit_broker import create_queue, broker
 from dodo.dodo.rabbitmq.schemas import DodoProductSchema
 from dodo.dodo.spiders.dodo import DodoSpider
 
@@ -33,7 +33,7 @@ def start_scrapy():
 async def send_items_to_rabbit(file_path: str):
     """коронутина для отправки всех обьектов в брокера"""
     async with broker as br:
-        with open(file_path) as file:
+        with open(file_path, "r") as file:
             for item in file.readlines():
                 await br.publish(
                     DodoProductSchema(**json.loads(item)),

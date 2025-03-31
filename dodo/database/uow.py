@@ -1,4 +1,6 @@
 """Юнит для работы с БД"""
+# pylint: disable = [import-error, no-name-in-module]
+
 from typing import Union
 
 from sqlalchemy import text
@@ -20,7 +22,7 @@ class UoW:
         self._factory: AsyncSession = async_session_factory()
 
     @LOGER.catch
-    async def create_obj(self, obj: OrmObj, **kwargs) -> OrmObj.id | None:
+    async def create_obj(self, obj: OrmObj, **kwargs) -> OrmObj | None:
         """метод для создания обьекта"""
         async with self._factory as session:
             stmt = obj(**kwargs)
